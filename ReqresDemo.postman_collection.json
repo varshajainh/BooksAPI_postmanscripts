@@ -1,0 +1,1039 @@
+{
+	"info": {
+		"_postman_id": "02ca4fa0-953c-4d2f-962d-ba46932c736a",
+		"name": "ReqresDemo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38402216"
+	},
+	"item": [
+		{
+			"name": "Register_NewUser_Validation",
+			"item": [
+				{
+					"name": "RegisterUser_ValidUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Fixed parsing and id existence check\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Test for response status code\r",
+									"pm.test(\"Response status code is 200 and status name is OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"// Validate the response body structure\r",
+									"pm.test(\"Response body contains id and token\", function () {\r",
+									"    pm.expect(jsonData).to.have.all.keys('id', 'token');\r",
+									"});\r",
+									"\r",
+									"// Get the id number and save it in a variable\r",
+									"pm.test(\"Get the id number and save the id in a variable\", () => {\r",
+									"    if (jsonData.id !== undefined) {\r",
+									"        var id = jsonData.id;\r",
+									"        console.log(id);\r",
+									"    } else {\r",
+									"        pm.expect.fail(\"id does not exist in the response\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{Valid User_Email}}\",\r\n    \"password\": \"{{Valid User_Password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RegisterUser_InvalidUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//validate the status code details\r",
+									"pm.test(\"Status Code validation\",()=>\r",
+									"{\r",
+									" pm.response.to.have.status(400);\r",
+									" pm.response.to.have.status(\"Bad Request\");\r",
+									"});\r",
+									"\r",
+									"//validate the error message\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"To display displayed error message\",()=>\r",
+									"{\r",
+									"    if (jsonData.error) {\r",
+									"        console.log(\"Login was unsuccessful due to the following reason: \" + jsonData.error);\r",
+									"    } else {\r",
+									"        console.log(\"Login was successful\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{Invalid User_Email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "To validate the new user registration",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"// To validate the content type value from the headers\r",
+							"pm.test(\"Content-Type value validation\", () => {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.equal(\"application/json; charset=utf-8\");\r",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "UserLogin_Validation",
+			"item": [
+				{
+					"name": "LoginUser_ValidUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Status validation\r",
+									"pm.test(\"Status code validation\",()=>\r",
+									"{\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"//token validation\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code validation\",()=>\r",
+									"{\r",
+									"   pm.expect(jsonData).to.have.all.keys('token');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate token is generated\",()=>\r",
+									"{\r",
+									"    if(jsonData.token!=undefined)\r",
+									"    {\r",
+									"        pm.expect(jsonData.token).to.not.be.empty;\r",
+									"    }\r",
+									"    else\r",
+									"    {\r",
+									"        console.log(\"Token is not generated\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{Valid User_Email}}\",\r\n    \"password\": \"{{Valid User_Password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LoginUser_InvalidUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData= pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code validation\",()=>\r",
+									"{\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.status(\"Bad Request\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message validation\",()=>\r",
+									"{\r",
+									"    pm.expect(jsonData.error).to.eql(\"Missing email or username\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{Invalid User_Email}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"// To validate the content type value from the headers\r",
+							"pm.test(\"Content-Type value validation\", () => {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.equal(\"application/json; charset=utf-8\");\r",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "E2E Flow",
+			"item": [
+				{
+					"name": "GetAllUsers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"//response data validation\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Data validation\", function () {\r",
+									"    pm.expect(jsonData.page).to.eql(1);\r",
+									"    pm.expect(jsonData.per_page).to.eql(6);\r",
+									"    pm.expect(jsonData.total).to.eql(12);   \r",
+									"    pm.expect(jsonData.total_pages).to.eql(2);\r",
+									"    pm.expect(jsonData.data.length).to.eql(6);\r",
+									"    pm.expect(jsonData.support.url).to.eql(\"https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral\");\r",
+									"    pm.expect(jsonData.support.text).to.eql(\"Tired of writing endless social media content? Let Content Caddy generate it for you.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users?page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateUser_Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Fixed ReferenceError by defining userId\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    pm.response.to.have.status(\"Created\");\r",
+									"});\r",
+									"\r",
+									"//Response data validation\r",
+									"var jsonData=pm.response.json();\r",
+									"\r",
+									"//json structure validation\r",
+									"pm.test(\"Response data validation\", function () {\r",
+									"   \r",
+									"    const today = new Date().toISOString().split('T')[0];\r",
+									"    \r",
+									"    pm.expect(jsonData).to.have.property(\"name\").that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property(\"job\").that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property(\"id\").that.is.a('string'); \r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\").that.is.a('string');\r",
+									"    \r",
+									"    // Check if createdAt property exists before splitting\r",
+									"    if (jsonData.createdAt) {\r",
+									"        const createdAtDate = jsonData.createdAt.split('T')[0];\r",
+									"        pm.expect(createdAtDate).to.eql(today);\r",
+									"    }\r",
+									"    \r",
+									"    // Store the user details in a collection variable for future use\r",
+									"    pm.collectionVariables.set(\"userId\", jsonData.id); \r",
+									"    pm.collectionVariables.set(\"name\", jsonData.name);\r",
+									"    pm.collectionVariables.set(\"job\", jsonData.job);\r",
+									"    console.log(\"User ID stored in collection variable: \" + pm.collectionVariables.get(\"userId\"));\r",
+									"    console.log(\"User name stored in collection variable: \" + pm.collectionVariables.get(\"name\"));\r",
+									"    console.log(\"User job title stored in collection variable: \" + pm.collectionVariables.get(\"job\"));\r",
+									"\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/*\r",
+									"let random=Math.random().toString(36).substring(2);\r",
+									"\r",
+									"let name = \"ABC\" + random;\r",
+									"let job = \"XYZ\" + random;\r",
+									"\r",
+									"pm.collectionVariables.set(\"name\", name);\r",
+									"pm.collectionVariables.set(\"job\", job);\r",
+									"*/"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{UserName}}\",\r\n    \"job\": \"{{Designation}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleUser_Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"let responseJson = pm.response.json();\r",
+									"pm.test(\"User data is present\", function () {\r",
+									"    pm.expect(responseJson.data).to.have.property(\"id\").that.is.a('number');\r",
+									"    pm.expect(responseJson.data).to.have.property(\"email\").that.is.a('string');\r",
+									"    pm.expect(responseJson.data).to.have.property(\"first_name\").that.is.a('string');\r",
+									"    pm.expect(responseJson.data).to.have.property(\"last_name\").that.is.a('string');\r",
+									"    pm.expect(responseJson.data).to.have.property(\"avatar\").that.is.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleUserInValid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/23",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"23"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"var jsonData=pm.response.json();\r",
+									"// Test to validate updatedAt date is today's date\r",
+									"pm.test(\"updatedAt date is today's date\", function () {\r",
+									"    const today = new Date().toISOString().split('T')[0];\r",
+									"    const updatedAtDate = jsonData.updatedAt.split('T')[0];\r",
+									"    pm.expect(updatedAtDate).to.eql(today);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{UserName}}\",\r\n    \"job\": \"{{Updated Designation}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUserPartially",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Test for response body structure\r",
+									"pm.test(\"Response body contains required properties\", function () {\r",
+									"    pm.expect(jsonData).to.have.all.keys('name', 'job', 'updatedAt');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains the correct name\", function () {\r",
+									"   // pm.expect(jsonData.name).to.eql(\"{{UserName}}\");\r",
+									"    //pm.expect(jsonData.job).to.eql(\"{{Designation}}\");\r",
+									"    pm.expect(jsonData.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z/);\r",
+									"    \r",
+									"    });\r",
+									"\r",
+									"// Test to validate updatedAt date is today's date\r",
+									"pm.test(\"updatedAt date is today's date\", function () {\r",
+									"    const today = new Date().toISOString().split('T')[0];\r",
+									"    const updatedAtDate = jsonData.updatedAt.split('T')[0];\r",
+									"    pm.expect(updatedAtDate).to.eql(today);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//pm.variables.set(\"Name\", \"morpheus\");\r",
+									"//pm.variables.set(\"Job\", \"Teacher\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{UserName}}\",\r\n    \"job\": \"{{Designation}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"    pm.response.to.have.status(\"No Content\");\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.unset(\"userId\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.collectionVariables.get(\"userId\") !== undefined) {\r",
+									"   pm.request.url = pm.collectionVariables.get(\"base_url\") + \"/api/users/\" + pm.collectionVariables.get(\"userId\");\r",
+									"} else {\r",
+									"    pm.request.url =pm.collectionVariables.get(\"base_url\") + \"/api/users/1\";\r",
+									"}\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/{{userId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"pm.test(\"Validate content type\",()=>\r",
+							"{\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.equal(\"application/json; charset=utf-8\");\r",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ValidateResources",
+			"item": [
+				{
+					"name": "GetListOfResources",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code validation\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"var jsonData=pm.response.json();\r",
+									"\r",
+									"pm.test(\"Page validation\", function () {\r",
+									"    pm.expect(jsonData.page).to.eql(1);\r",
+									"    pm.expect(jsonData.per_page).to.eql(6);\r",
+									"    pm.expect(jsonData.total).to.eql(12);\r",
+									"    pm.expect(jsonData.total_pages).to.eql(2);\r",
+									"    pm.expect(jsonData.data.length).to.eql(6);\r",
+									"    });\r",
+									"    "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/unknown",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"unknown"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleResourceValid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code validation\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"// Validate the data structure\r",
+									"pm.test(\"Data validation\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property('id').that.is.a('number').and.to.equal(2);\r",
+									"    pm.expect(jsonData.data).to.have.property('name').that.is.a('string');\r",
+									"    pm.expect(jsonData.data).to.have.property('year').that.is.a('number');\r",
+									"    pm.expect(jsonData.data).to.have.property('color').that.is.a('string');\r",
+									"    pm.expect(jsonData.data).to.have.property('pantone_value').that.is.a('string');\r",
+									"    pm.expect(jsonData.support).to.have.property('url').that.is.a('string');\r",
+									"    pm.expect(jsonData.support).to.have.property('text').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"ResourcePageID\", 2);\r",
+									"console.log(pm.variables.get(\"ResourcePageID\"));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/unknown/{{ResourcePageID}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"unknown",
+								"{{ResourcePageID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleResourceInvalid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code validation\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"});\r",
+									"\r",
+									"pm.variables.unset(\"UnknownInvalid\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"UnknownInvalid\", 23);\r",
+									"console.log(pm.variables.get(\"UnknownInvalid\"));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/unknown/{{UnknownInvalid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"unknown",
+								"{{UnknownInvalid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"pm.test(\"Validate content type\",()=>\r",
+							"{\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.equal(\"application/json; charset=utf-8\");\r",
+							"    \r",
+							"});\r",
+							"\r",
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "reqres-free-v1",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-api-key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"pm.collectionVariables.set(\"base_url\",\"https://reqres.in\");\r",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "pageno",
+			"value": ""
+		},
+		{
+			"key": "userid",
+			"value": ""
+		},
+		{
+			"key": "url_collection",
+			"value": ""
+		},
+		{
+			"key": "name",
+			"value": ""
+		},
+		{
+			"key": "base_url",
+			"value": ""
+		},
+		{
+			"key": "job",
+			"value": ""
+		}
+	]
+}
